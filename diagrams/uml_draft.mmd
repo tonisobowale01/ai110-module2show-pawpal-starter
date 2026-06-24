@@ -1,0 +1,35 @@
+classDiagram
+    class Owner {
+        +String name
+        +int available_minutes
+        +Pet pet
+        +update(name, available_minutes)
+    }
+
+    class Pet {
+        +String name
+        +String species
+        +update(name, species)
+    }
+
+    class Task {
+        +String name
+        +int duration
+        +String priority
+        +bool recurring
+        +update(name, duration, priority, recurring)
+    }
+
+    class Scheduler {
+        +Owner owner
+        +list tasks
+        +list plan
+        +add_task(task)
+        +generate_plan()
+        +display_plan()
+        +explain_plan()
+    }
+
+    Owner *-- Pet : has
+    Scheduler --> Owner : uses
+    Scheduler o-- Task : schedules
