@@ -117,6 +117,10 @@ class Scheduler:
         """Sort the given tasks by their duration (time) attribute."""
         return sorted(tasks, key=lambda t: t.duration, reverse=descending)
 
+    def sort_by_due_date(self, tasks):
+        """Sort the given tasks chronologically by due_date, undated tasks last."""
+        return sorted(tasks, key=lambda t: (t.due_date is None, t.due_date))
+
     def detect_conflicts(self, tasks: Optional[list[Task]] = None):
         """Return warning messages for any tasks that share the exact same due_date."""
         candidates = tasks if tasks is not None else self.tasks

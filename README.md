@@ -57,7 +57,7 @@ Today's Schedule for Alex:
 
 ```bash
 # Run the full test suite:
-pytest
+pytest tests/test_pawpal.py -v
 
 # Run with coverage:
 pytest --cov
@@ -66,8 +66,34 @@ pytest --cov
 Sample test output:
 
 ```
-# Paste your pytest output here
+============= test session starts =============
+platform win32 -- Python 3.14.0, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\tonis\Documents\ai110-module2show-pawpal-starter
+plugins: anyio-4.14.0
+collected 15 items                             
+
+tests\test_pawpal.py ...............     [100%]
+
+============= 15 passed in 0.06s ==============
 ```
+
+The suite in `tests/test_pawpal.py` covers:
+
+- **Task completion & recurrence** — completing a task flips its status; a `"daily"`/`"weekly"` recurring task spawns its next occurrence with the due date advanced by 1 or 7 days; one-off tasks (`recurrence=None`) and unknown recurrence values don't spawn anything.
+- **Sorting** — `sort_by_time()` orders tasks by duration (descending) with stable tie-breaking; `sort_by_due_date()` orders tasks chronologically and pushes undated tasks to the end without crashing.
+- **Plan generation** — `generate_plan()` respects the owner's available minutes (skipping tasks that don't fit), prioritizes higher-priority tasks when time is limited, excludes already-completed tasks, handles an empty task list, and pushes unrecognized priority values to the back of the queue instead of erroring.
+- **Conflict detection** — `detect_conflicts()` flags multiple tasks sharing the same `due_date` and ignores tasks with no `due_date` set (so they aren't falsely treated as conflicting with each other).
+
+### Confidence level
+
+**⭐⭐⭐⭐☆ (4/5)**
+
+All 15 tests pass, covering the core scheduling behaviors (sorting, plan generation, recurrence, conflict detection) plus their main edge cases (empty inputs, ties, unknown priority/recurrence values, missing due dates). This gives good confidence in the correctness of the scheduling and recurrence logic as implemented, short of a 5th star due to the gaps below.
+
+Known gaps not covered by tests:
+- `spawn_next_occurrence()` falls back to `datetime.now()` when `due_date` is `None`, which is non-deterministic and untested.
+- No tests exercise the Streamlit UI (`app.py`) itself — only the underlying `pawpal_system.py` logic.
+- No tests for negative/zero `duration` or `available_minutes` values.
 
 ## 📐 Smarter Scheduling
 
