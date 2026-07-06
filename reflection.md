@@ -39,6 +39,8 @@
 - Describe one tradeoff your scheduler makes.
 - Why is that tradeoff reasonable for this scenario?
 
+  > `generate_plan()` uses a greedy strategy: tasks are sorted by priority (then by longest duration as a tie-break) and packed into the owner's available minutes in that order, stopping each task the moment it no longer fits. This is not guaranteed to produce the schedule that uses the owner's time most efficiently — a classic counterexample is a knapsack-style case where skipping one large task in favor of several smaller ones would leave less time wasted. An optimal solution would require exploring combinations of tasks (e.g., dynamic programming over available minutes), which is considerably more complex and slower for a real-time planner. The greedy approach was chosen because it's simple to read, fast (single sort plus a linear pass), and produces "good enough" plans that always respect priority ordering — which matters more to a pet owner than squeezing in a couple of extra minutes of usage. It also detects scheduling conflicts (`detect_conflicts()`) as a lightweight warning rather than blocking plan generation, trading strict correctness (no double-booking) for simplicity and not crashing on messy input.
+
 ---
 
 ## 3. AI Collaboration

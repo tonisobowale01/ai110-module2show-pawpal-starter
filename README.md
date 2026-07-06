@@ -71,14 +71,12 @@ Sample test output:
 
 ## 📐 Smarter Scheduling
 
-> Fill in once you've implemented scheduling logic.
-
-| Feature           | Method(s) | Notes                             |
-| ----------------- | --------- | --------------------------------- |
-| Task sorting      |           | e.g., by priority, duration       |
-| Filtering         |           | e.g., skip tasks if time runs out |
-| Conflict handling |           | e.g., overlapping time slots      |
-| Recurring tasks   |           | e.g., daily vs. weekly            |
+| Feature           | Method(s)                                                  | Notes                                                                                                                                                                                                                                                         |
+| ----------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Task sorting      | `Scheduler.sort_by_time()`, `Scheduler.generate_plan()`    | `generate_plan()` sorts candidate tasks by priority first, then by duration (longest first) as a tie-break, and greedily packs them into the owner's available minutes. `sort_by_time()` is also exposed standalone to sort any task list purely by duration. |
+| Filtering         | `Scheduler.filter_tasks()`                                 | Filters tasks by completion status and/or pet name. `generate_plan()` uses it internally to exclude completed tasks before scheduling.                                                                                                                        |
+| Conflict handling | `Scheduler.detect_conflicts()`, `Scheduler.display_plan()` | Groups tasks by exact `due_date` and returns a warning string for any timestamp shared by 2+ tasks (same or different pets), instead of crashing. `generate_plan()` populates `self.conflicts`, and `display_plan()` prints each warning after the schedule.  |
+| Recurring tasks   | `Task.mark_complete()`, `Task.spawn_next_occurrence()`     | Completing a task with `recurrence` set to `"daily"` or `"weekly"` automatically creates and registers (via `Pet.add_task()`) the next occurrence, with `due_date` advanced by 1 or 7 days respectively.                                                      |
 
 ## 📸 Demo Walkthrough
 
