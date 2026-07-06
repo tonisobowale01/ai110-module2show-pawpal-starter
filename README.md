@@ -95,6 +95,17 @@ Known gaps not covered by tests:
 - No tests exercise the Streamlit UI (`app.py`) itself — only the underlying `pawpal_system.py` logic.
 - No tests for negative/zero `duration` or `available_minutes` values.
 
+## ✨ Features
+
+- **Multi-pet ownership** — an `Owner` can have any number of `Pet`s, each tracking its own list of tasks (`Pet.add_task()`).
+- **Priority-first greedy scheduling** — `generate_plan()` sorts candidate tasks by priority (`high` → `medium` → `low`), breaking ties by longest duration first, then greedily fits them into `Owner.available_minutes` until time runs out; anything that doesn't fit is recorded in `Scheduler.skipped` instead of being silently dropped.
+- **Completion-aware planning** — `generate_plan()` calls `filter_tasks(completed=False)` first, so completed tasks are automatically excluded from future schedules.
+- **Task filtering** — `filter_tasks()` narrows the task list by completion status and/or by pet name, independently or combined.
+- **Flexible sorting** — `sort_by_time()` orders tasks by duration; `sort_by_due_date()` orders chronologically and pushes undated tasks to the end without erroring.
+- **Conflict detection** — `detect_conflicts()` groups tasks by exact `due_date` and flags any timestamp shared by 2+ tasks, surfaced both in `display_plan()` output and as warnings in the UI.
+- **Recurring tasks** — `mark_complete()` on a task with `recurrence` set to `"daily"` or `"weekly"` automatically spawns and registers its next occurrence via `spawn_next_occurrence()`, advancing `due_date` by 1 or 7 days.
+- **Plan explanation** — `explain_plan()` returns a plain-language reason for every included and skipped task, so the scheduling decision isn't a black box.
+
 ## 📐 Smarter Scheduling
 
 | Feature           | Method(s)                                                  | Notes                                                                                                                                                                                                                                                         |
@@ -106,12 +117,64 @@ Known gaps not covered by tests:
 
 ## 📸 Demo Walkthrough
 
-Describe your app in numbered steps so a reader can follow along without watching a video:
+### Main UI features
 
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
+- **Owner setup** — name and available minutes for the day, kept in `st.session_state.owner`.
+- **Pets manager** — add any number of pets (name + species); each appears in a running table.
+- **Task builder** — add a task (title, duration, priority) assigned to any existing pet via a dropdown.
+- **Task list** — a live table of every task added, with filters for completion status and pet, and a sort toggle (duration vs. due date).
+- **Build Schedule** — runs the scheduler and displays the generated plan, skipped tasks, conflict warnings, and the plan's reasoning.
+
+### Actions a user can perform
+
+- Add a pet.
+- Add a task and assign it to a specific pet.
+- Filter the task list by completion status (`All` / `Completed` / `Not completed`) or by pet.
+- Sort the task list by duration or due date.
+- Generate a daily schedule from the current tasks and available time.
+- Review why each task was included or skipped.
+
+### Example workflow
+
+1. Enter the owner's name and how many minutes they have available today.
+2. Add each pet the owner cares for (e.g., "Biscuit" the dog, "Whiskers" the cat).
+3. Add tasks one at a time, picking a title, duration, priority, and which pet it's for.
+4. Use the filters to check, for example, only "Whiskers"'s incomplete tasks.
+5. Click **Generate schedule** to see which tasks fit in the available time, which were skipped, any scheduling conflicts, and the reasoning behind the plan.
+
+### Key scheduler behaviors
+
+- Higher-priority tasks are always considered before lower-priority ones, regardless of add order.
+- Once available minutes run out, remaining tasks are skipped rather than causing an error.
+- Completed tasks are automatically excluded from future plans.
+- Two tasks sharing the same exact due date are flagged as a conflict rather than silently double-booked.
+
+### Sample CLI output (`python main.py`)
+
+```
+All tasks for Biscuit:
+  Morning walk (completed=False)
+  Feeding (completed=False)
+  Vet checkup (completed=True)
+
+Incomplete tasks only:
+  Morning walk (priority=high)
+  Feeding (priority=high)
+  Feeding (priority=high)
+  Litter box cleaning (priority=medium)
+
+Generating plan (should skip completed 'Vet checkup' and sort high-priority first):
+Today's Schedule for Alex:
+  08:00 — Morning walk for Biscuit (30 min) [priority: high]
+  08:30 — Feeding for Whiskers (10 min) [priority: high]
+  08:40 — Feeding for Biscuit (10 min) [priority: high]
+  08:50 — Litter box cleaning for Whiskers (15 min) [priority: medium]
+  WARNING: Conflict at 2026-07-05 08:00: 'Morning walk' (Biscuit), 'Feeding' (Whiskers) are scheduled at the same time.
+
+Included 'Morning walk' (priority: high, 30 min) — fit within remaining available time.
+Included 'Feeding' (priority: high, 10 min) — fit within remaining available time.
+Included 'Feeding' (priority: high, 10 min) — fit within remaining available time.
+Included 'Litter box cleaning' (priority: medium, 15 min) — fit within remaining available time.
+```
 
 **Screenshot or video** *(optional)*: <!-- Insert a screenshot or link to a demo video here -->
