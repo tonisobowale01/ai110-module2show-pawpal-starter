@@ -47,11 +47,10 @@ pip install -r requirements.txt
 Paste a sample of your app's CLI or Streamlit output here so a reader can see what a generated plan looks like:
 
 ```
-# e.g.:
-# Daily plan for Biscuit (Golden Retriever):
-#   08:00 — Morning walk (30 min) [priority: high]
-#   09:00 — Feeding (10 min) [priority: high]
-#   ...
+Today's Schedule for Alex:
+  08:00 — Morning walk for Biscuit (30 min) [priority: high]
+  08:30 — Feeding for Whiskers (10 min) [priority: high]
+  08:40 — Litter box cleaning for Whiskers (15 min) [priority: medium]
 ```
 
 ## 🧪 Testing PawPal+
@@ -74,12 +73,12 @@ Sample test output:
 
 > Fill in once you've implemented scheduling logic.
 
-| Feature | Method(s) | Notes |
-|---------|-----------|-------|
-| Task sorting | | e.g., by priority, duration |
-| Filtering | | e.g., skip tasks if time runs out |
-| Conflict handling | | e.g., overlapping time slots |
-| Recurring tasks | | e.g., daily vs. weekly |
+| Feature           | Method(s) | Notes                             |
+| ----------------- | --------- | --------------------------------- |
+| Task sorting      |           | e.g., by priority, duration       |
+| Filtering         |           | e.g., skip tasks if time runs out |
+| Conflict handling |           | e.g., overlapping time slots      |
+| Recurring tasks   |           | e.g., daily vs. weekly            |
 
 ## 📸 Demo Walkthrough
 
